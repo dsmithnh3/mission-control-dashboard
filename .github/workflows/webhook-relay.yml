@@ -1,0 +1,44 @@
+name: Webhook Relay
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'data/tasks.json'
+
+jobs:
+  relay:
+    runs-on: ubuntu-latest
+    timeout-minutes: 1
+    steps:
+      - name: Relay push event to OpenClaw gateway
+        env:
+          HOOK_TOKEN: ${{ secrets.OPENCLAW_HOOK_TOKEN }}
+          FUNNEL_URL: ${{ secrets.OPENCLAW_FUNNEL_URL }}
+        run: |
+          curl -sf -X POST "${FUNNEL_URL}/hooks/github-mission-control" \
+            -H "Content-Type: application/json" \
+            -H "X-OpenClaw-Token: ${HOOK_TOKEN}" \
+            -H "X-GitHub-Event: push" \
+            -d '{
+              "ref": "refs/heads/main",
+              "after": "${{ github.sha }}",
+              "repository": {
+                "name": "${{ github.event.repository.name }}",
+                "full_name": "${{ github.repository }}",
+                "owner": { "login": "${{ github.repository_owner }}" },
+                "private": ${{ github.event.repository.private }},
+                "default_branch": "main"
+              },
+              "pusher": { "name": "${{ github.actor }}" },
+              "sender": { "login": "${{ github.actor }}" },
+              "head_commit": { "id": "${{ github.sha }}" },
+              "commits": [
+                {
+                  "id": "${{ github.sha }}",
+                  "added": [],
+                  "modified": ["data/tasks.json"],
+                  "removed": []
+                }
+              ]
+            }'
