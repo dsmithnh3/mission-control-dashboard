@@ -283,7 +283,7 @@
       "id": "docker_webhook_test_20260212-201529",
       "title": "Docker Webhook Validation Task",
       "description": "Temporary task created by Codex to validate Mission Control webhook sandbox after Docker startup.",
-      "status": "backlog",
+      "status": "in_progress",
       "project": "default",
       "tags": [
         "validation",
@@ -335,5 +335,5 @@
       "time": "just now"
     }
   ],
-  "lastUpdated": "2026-02-13T01:21:46Z"
+  "lastUpdated": "2026-02-13T01:21:51Z"
 }
