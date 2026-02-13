@@ -1,0 +1,47 @@
+name: Forward Mission Control Push To OpenClaw
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "data/tasks.json"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  forward:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Validate required secrets
+        env:
+          OPENCLAW_HOOK_URL: ${{ secrets.OPENCLAW_HOOK_URL }}
+          OPENCLAW_HOOK_TOKEN: ${{ secrets.OPENCLAW_HOOK_TOKEN }}
+        run: |
+          set -euo pipefail
+          [ -n "${OPENCLAW_HOOK_URL:-}" ] || { echo "Missing secret: OPENCLAW_HOOK_URL"; exit 1; }
+          [ -n "${OPENCLAW_HOOK_TOKEN:-}" ] || { echo "Missing secret: OPENCLAW_HOOK_TOKEN"; exit 1; }
+
+      - name: Forward push payload to OpenClaw hook endpoint
+        env:
+          OPENCLAW_HOOK_URL: ${{ secrets.OPENCLAW_HOOK_URL }}
+          OPENCLAW_HOOK_TOKEN: ${{ secrets.OPENCLAW_HOOK_TOKEN }}
+          GITHUB_EVENT_PATH: ${{ github.event_path }}
+        run: |
+          set -euo pipefail
+          HTTP_CODE="$(curl -sS -o /tmp/openclaw-hook-response.json -w '%{http_code}' \
+            -X POST "${OPENCLAW_HOOK_URL}" \
+            -H "Content-Type: application/json" \
+            -H "X-OpenClaw-Token: ${OPENCLAW_HOOK_TOKEN}" \
+            --data-binary @"${GITHUB_EVENT_PATH}")"
+
+          if [ "${HTTP_CODE}" -lt 200 ] || [ "${HTTP_CODE}" -ge 300 ]; then
+            echo "OpenClaw hook call failed with HTTP ${HTTP_CODE}"
+            cat /tmp/openclaw-hook-response.json
+            exit 1
+          fi
+
+          echo "OpenClaw hook call succeeded (HTTP ${HTTP_CODE})"
