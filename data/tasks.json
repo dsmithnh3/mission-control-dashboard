@@ -278,33 +278,6 @@
       "priority": "low",
       "comments": [],
       "createdAt": "2026-01-01T00:00:02Z"
-    },
-    {
-      "id": "docker_webhook_test_20260212-201529",
-      "title": "Docker Webhook Validation Task",
-      "description": "Temporary task created by Codex to validate Mission Control webhook sandbox after Docker startup.",
-      "status": "in_progress",
-      "project": "default",
-      "tags": [
-        "validation",
-        "docker",
-        "webhook"
-      ],
-      "subtasks": [
-        {
-          "id": "sub_001",
-          "title": "Create in backlog",
-          "done": true
-        },
-        {
-          "id": "sub_002",
-          "title": "Move to in_progress",
-          "done": true
-        }
-      ],
-      "priority": "low",
-      "comments": [],
-      "createdAt": "2026-02-13T01:15:29Z"
     }
   ],
   "projects": [
@@ -335,5 +308,5 @@
       "time": "just now"
     }
   ],
-  "lastUpdated": "2026-02-13T01:21:51Z"
+  "lastUpdated": "2026-02-13T01:23:14Z"
 }
